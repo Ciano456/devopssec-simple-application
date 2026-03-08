@@ -20,12 +20,20 @@ jobs:
       - checkout
       - add_ssh_keys
       - run:
+          name: Prepare certificate files
+          command: |
+            printf '%s' "$PRIVATE_KEY_B64" > privatekey.b64
+            printf '%s' "$SERVER_B64" > server.b64
+      - run:
+          name: Copy deployment files to EC2
+          command: |
+            scp -o StrictHostKeyChecking=no deploy.sh privatekey.b64 server.b64 ubuntu@$EC2_HOST:/home/ubuntu/devopssec-simple-application/
+      - run:
           name: Deploy to EC2
           command: |
             ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST '
               cd /home/ubuntu/devopssec-simple-application &&
-              export PRIVATE_KEY_B64="'"$PRIVATE_KEY_B64"'" &&
-              export SERVER_B64="'"$SERVER_B64"'" &&
+              chmod +x deploy.sh &&
               bash deploy.sh
             '
 
