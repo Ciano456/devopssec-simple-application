@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0160" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-03-08T12:38:24" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Simple Application" timestamp="2026-03-08T12:38:24" tests="4" file="/Users/cianoconnor/Desktop/DevOps/DevOpsSec-CA/SimpleApplication/test/app.test.js" time="0.0160" failures="0">
+    <testcase name="Simple Application GET / should return 200" time="0.0110" classname="GET / should return 200">
+    </testcase>
+    <testcase name="Simple Application GET /about should return 200" time="0.0020" classname="GET /about should return 200">
+    </testcase>
+    <testcase name="Simple Application GET /contact should return 200" time="0.0020" classname="GET /contact should return 200">
+    </testcase>
+    <testcase name="Simple Application GET /health should return OK" time="0.0010" classname="GET /health should return OK">
+    </testcase>
+  </testsuite>
+</testsuites>
