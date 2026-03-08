@@ -12,10 +12,13 @@ echo "Pulling latest code from GitHub..."
 git pull origin main
 
 echo "Writing SSL private key..."
-echo "$PRIVATE_KEY" > privatekey.pem
+printf '%s' "$PRIVATE_KEY_B64" | base64 -d > privatekey.pem
 
 echo "Writing SSL certificate..."
-echo "$SERVER" > server.crt
+printf '%s' "$SERVER_B64" | base64 -d > server.crt
+
+chmod 600 privatekey.pem
+chmod 644 server.crt
 
 echo "Installing dependencies..."
 npm ci

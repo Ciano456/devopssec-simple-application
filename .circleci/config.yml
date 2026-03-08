@@ -24,8 +24,8 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST '
               cd /home/ubuntu/devopssec-simple-application &&
-              export PRIVATE_KEY="$PRIVATE_KEY" &&
-              export SERVER="$SERVER" &&
+              export PRIVATE_KEY_B64="'"$PRIVATE_KEY_B64"'" &&
+              export SERVER_B64="'"$SERVER_B64"'" &&
               bash deploy.sh
             '
 
