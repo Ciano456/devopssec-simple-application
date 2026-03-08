@@ -1,0 +1,42 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/node:20.10
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Run tests
+          command: npm test
+
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - add_ssh_keys
+      - run:
+          name: Deploy to EC2
+          command: |
+            ssh -o StrictHostKeyChecking=no ubuntu@$EC2_HOST '
+              cd /home/ubuntu/devopssec-simple-application &&
+              export PRIVATE_KEY="$PRIVATE_KEY" &&
+              export SERVER="$SERVER" &&
+              bash deploy.sh
+            '
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main

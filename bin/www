@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
+/**
+ * Module dependencies.
+ */
 var app = require('../app');
 var debug = require('debug')('simpleapplication:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-var server = http.createServer(app);
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
+/**
+ * Normalize a port into a number, string, or false.
+ */
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -27,6 +26,9 @@ function normalizePort(val) {
   return false;
 }
 
+/**
+ * Event listener for HTTP/HTTPS server "error" event.
+ */
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -50,10 +52,51 @@ function onError(error) {
   }
 }
 
+/**
+ * Event listener for HTTP/HTTPS server "listening" event.
+ */
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log('Server running on ' + bind);
+}
+
+// HTTPS Section
+var port = normalizePort(process.env.PORT || '8080');
+var https_port = normalizePort(process.env.PORT_HTTPS || '8443');
+var server;
+
+if (process.env.ENV !== 'DEV') {
+  var privatekey = fs.readFileSync('privatekey.pem', 'utf8');
+  var cert = fs.readFileSync('server.crt', 'utf8');
+
+  var options = {
+    key: privatekey,
+    cert: cert
+  };
+
+  app.set('port', https_port);
+
+  server = https.createServer(options, app);
+  server.listen(https_port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+  http.createServer(function (req, res) {
+    var host = req.headers['host'] || '';
+    host = host.replace(/:\d+$/, ':' + https_port);
+    res.writeHead(301, { Location: 'https://' + host + req.url });
+    res.end();
+  }).listen(port);
+
+} else {
+  app.set('port', port);
+
+  server = http.createServer(app);
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
 }
