@@ -24,3 +24,23 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  cd:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd /home/ubuntu/devopssec-simple-application
+            git pull origin main
+            npm ci
+            pm2 restart simpleapp || PORT=3000 pm2 start ./bin/www --name simpleapp
+            pm2 save
