@@ -8,8 +8,9 @@ echo "Starting deployment..."
 
 cd "$APP_DIR"
 
-echo "Pulling latest code from GitHub..."
-git pull origin main
+echo "Fetching latest code from GitHub..."
+git fetch origin main
+git reset --hard origin/main
 
 echo "Installing dependencies..."
 npm ci
